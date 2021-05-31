@@ -8,7 +8,6 @@ tively. Moreover, TSFD-Net outperforms the Mask-RCNN, Micro-Net, and Hover-Net i
 
 The PanNuke dataset can be downloaded form [here](https://warwick.ac.uk/fac/sci/dcs/research/tia/data/pannuke).
 
-For data preprocessing follow the steps outlined in this [repo](https://github.com/Mr-TalhaIlyas/Prerpcessing-PanNuke-Nuclei-Instance-Segmentation-Dataset)
 
 ## Network Architecture:
 
