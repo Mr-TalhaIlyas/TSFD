@@ -14,18 +14,18 @@ For data preprocessing follow the steps outlined in this [repo](https://github.c
 
 Figure below shows full architecture of our proposed TSFD-Net.
 
-![alt text]()
+![alt text](https://github.com/Mr-TalhaIlyas/TSFD-Net-for-Nuclei-Segmentation-and-Classification/blob/master/screens/img1.png)
 
 
 ## Results
 
 The Table below compare quantitative results of different models.
 
-![alt text]()
+![alt text](https://github.com/Mr-TalhaIlyas/TSFD-Net-for-Nuclei-Segmentation-and-Classification/blob/master/screens/img2.png)
 
 The figure below shows some qualitative results.
 
-![alt text]()
+![alt text](https://github.com/Mr-TalhaIlyas/TSFD-Net-for-Nuclei-Segmentation-and-Classification/blob/master/screens/img3.png)
 
 ## Evaluation
 
