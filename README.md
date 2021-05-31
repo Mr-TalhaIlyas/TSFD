@@ -1,3 +1,37 @@
-# PanNuke Evaluation Metrics
+# TSFD-Net-for-Nuclei-Segmentation-and-Classification
+
+A growing interest is emerging for cancer diagnosis from digital histopathology images. These images typically contain millions of nuclei from a single tissue slide. The appearance, shape, texture, and morphological features of the nuclei depend upon the tissue types. Segmentation, detection, and classification of the nuclei are the core analyzing steps for digital microscopic images. Therefore, in this paper, we design a Tissue Specific Feature Distillation Network (TSFD-Net) that extracts
+distilled features from specific tissue types, generates semantically strong feature pyramids by fus-ng the multi-scale features of the backbone, and predicts the semantic segmentation and boundarydetection masks. The average multi-class panoptic quality (mPQ) of tissue types and nuclei categories of the TSFD-Net for semantic and instance segmentation tasks on the PanNuke dataset are 4.15%, 4.11%, and 3.4% better than the state-of-the-art StarDIST, Hover-Net, and CPP-Net, respec-
+tively. Moreover, TSFD-Net outperforms the Mask-RCNN, Micro-Net, and Hover-Net in precision, recall, and F1-score matrices for detection and classification of nuclei types. The inference time of the TSFD-Net is 13.76, 2.06, and 2.23 times less than that of the Hover-Net, StarDIST, and CPP-Net, respectively
+
+## Pannuke Dataset:
+
+The PanNuke dataset can be downloaded form [here](https://warwick.ac.uk/fac/sci/dcs/research/tia/data/pannuke).
+
+For data preprocessing follow the steps outlined in this [repo](https://github.com/Mr-TalhaIlyas/Prerpcessing-PanNuke-Nuclei-Instance-Segmentation-Dataset)
+
+## Network Architecture:
+
+Figure below shows full architecture of our proposed TSFD-Net.
+
+![alt text]()
+
+
+## Results
+
+The Table below compare quantitative results of different models.
+
+![alt text]()
+
+The figure below shows some qualitative results.
+
+![alt text]()
+
+## Evaluation
+
+To evaluate the model we used the Panoptic Quality metric as introduced in [HoverNet](https://www.sciencedirect.com/science/article/pii/S1361841519301045) paper. We use the official implementation provided by the authors of [Pannuke](https://jgamper.github.io/PanNukeDataset/) dataset.
+To see our implementation follow the [link](https://github.com/Mr-TalhaIlyas/TSFD-Net-for-Nuclei-Segmentation-and-Classification/tree/master/eval). We mainly follow the original implementation with some minor improvements for exception handelling, bug fixes and better visualization.
+
+
 
 
