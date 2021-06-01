@@ -22,14 +22,19 @@ The Table below compare quantitative results of different models.
 
 ![alt text](https://github.com/Mr-TalhaIlyas/TSFD-Net-for-Nuclei-Segmentation-and-Classification/blob/master/screens/img2.png)
 
+## Visual Results
 The figure below shows some qualitative results.
 
 ![alt text](https://github.com/Mr-TalhaIlyas/TSFD-Net-for-Nuclei-Segmentation-and-Classification/blob/master/screens/img3.png)
 
 ## Evaluation
 
-To evaluate the model we used the Panoptic Quality metric as introduced in [HoverNet](https://www.sciencedirect.com/science/article/pii/S1361841519301045) paper. We use the official implementation provided by the authors of [Pannuke](https://jgamper.github.io/PanNukeDataset/) dataset.
-To see our implementation follow the [link](https://github.com/Mr-TalhaIlyas/TSFD-Net-for-Nuclei-Segmentation-and-Classification/tree/master/eval). We mainly follow the original implementation with some minor improvements for exception handelling, bug fixes and better visualization.
+To evaluate the model we used the Panoptic Quality metric as introduced in [HoverNet](https://www.sciencedirect.com/science/article/pii/S1361841519301045) paper.
+
+We use the official implementation provided by the authors of [Pannuke](https://jgamper.github.io/PanNukeDataset/) dataset.
+
+To see our implementation follow the [link](https://github.com/Mr-TalhaIlyas/TSFD-Net-for-Nuclei-Segmentation-and-Classification/tree/master/eval).
+We mainly follow the original implementation with some minor improvements for exception handelling, bug fixes and better visualization.
 
 
 
