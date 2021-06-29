@@ -325,6 +325,8 @@ def get_inst_seg(sep_inst, img, blend=True):
             1. overalyed over original image if; blend=True
             2. Raw mask if; blend=False
     '''    
+    # if you get shape mismatch error try swaping the (w,h) argument of the line below.
+    # i.e., from (x.shape[0], x.shape[1]) to (x.shape[1], x.shape[0]).
     img = cv2.resize(img, (sep_inst.shape[0], sep_inst.shape[1]), interpolation=cv2.INTER_LINEAR) 
     sep_inst = measure.label(sep_inst[:,:,0:5], connectivity=2, background=0) # ignore BG channel i.e. 6th ch.
     # take element wise sum of all channels so that each instance of each class
@@ -356,6 +358,8 @@ def get_inst_seg_bdr(sep_inst, img, blend=True):
             1. overalyed over original image if; blend=True
             2. Raw mask if; blend=False
     ''' 
+    # if you get shape mismatch error try swaping the (w,h) argument of the line below.
+    # i.e., from (x.shape[0], x.shape[1]) to (x.shape[1], x.shape[0]).
     img = cv2.resize(img, (sep_inst.shape[0], sep_inst.shape[1]), interpolation=cv2.INTER_LINEAR) 
     sep_inst = measure.label(sep_inst[:,:,0:5], connectivity=2, background=0)# ignore BG channel i.e. 6th ch.
     # take element wise sum of all channels so that each instance of each class
@@ -399,6 +403,8 @@ def get_sem(sem, img, blend=True):
             1. overalyed over original image if; blend=True
             2. Raw mask if; blend=False
     ''' 
+    # if you get shape mismatch error try swaping the (w,h) argument of the line below.
+    # i.e., from (x.shape[0], x.shape[1]) to (x.shape[1], x.shape[0]).
     img = cv2.resize(img, (sem.shape[0], sem.shape[1]), interpolation=cv2.INTER_LINEAR) 
     seg = gray2color(sem, use_pallet='pannuke')
     
@@ -425,6 +431,8 @@ def get_sem_bdr(sem, img, blend=True):
             1. overalyed over original image if; blend=True
             2. Raw mask if; blend=False
     ''' 
+    # if you get shape mismatch error try swaping the (w,h) argument of the line below.
+    # i.e., from (x.shape[0], x.shape[1]) to (x.shape[1], x.shape[0]).
     img = cv2.resize(img, (sem.shape[0], sem.shape[1]), interpolation=cv2.INTER_LINEAR) 
     # 1-hot encode all classes 
     sem_enc = gray2encoded(sem, num_class=6)
