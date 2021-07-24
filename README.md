@@ -39,5 +39,13 @@ To see our implementation follow the [link](https://github.com/Mr-TalhaIlyas/TSF
 We mainly follow the original implementation with some minor improvements for exception handelling, bug fixes and better visualization.
 
 
+## Citation 
+
+```
+Coming Soon IA...!
+
+paper under review in Elsevier Neural Networks ;)
+```
+
 
 
