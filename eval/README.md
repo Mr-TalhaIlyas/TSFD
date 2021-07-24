@@ -88,6 +88,13 @@ Printing calculated metrics on a single split
 | Uterus        | 0.5068 | 0.6204 |
 | Average       | 0.504  | 0.6377 |
 ```
+## Citation 
+
+```
+Coming Soon IA...!
+
+paper under review in Elsevier Neural Networks ;)
+```
 
 ## Referneces
 
