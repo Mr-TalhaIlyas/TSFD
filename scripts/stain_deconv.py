@@ -27,7 +27,7 @@ R-> Residual
 # Normalized optical density (OD) matrix M for H, E and DAB. 
 rgb_from_hed = np.array([[0.65, 0.70, 0.29], # H
                          [0.07, 0.99, 0.11], # E
-                         [0.00, 0.00, 1.00]])# D 0.27, 0.57, 0.78
+                         [0.27, 0.57, 0.78]])# D 
 hed_from_rgb = linalg.inv(rgb_from_hed)       
 
 # Normalized optical density (OD) matrix M for H and E.
