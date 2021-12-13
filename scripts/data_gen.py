@@ -169,7 +169,7 @@ def Tumor_IO(img_path, sem_mask, inst_mask, modelip_img_w, modelip_img_h, data_a
     '''
     img = cv2.imread(img_path, -1) 
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    h = decovn_he(img)
+    h = deconv_stains(img, her_from_rgb)
     
     sem = cv2.imread(sem_mask, -1)
     inst = cv2.imread(inst_mask, -1)
