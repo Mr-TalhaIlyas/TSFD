@@ -10,7 +10,7 @@ import imgaug as ia
 from tensorflow.python.keras.utils.data_utils import Sequence
 from skimage.color import rgb2hed, hed2rgb
 from morphology import assgin_via_majority
-
+from deconv_stains import her_from_rgb, hed_from_rgb, deconv_stains
 
 numbers = re.compile(r'(\d+)')
 def numericalSort(value):
@@ -28,17 +28,6 @@ def enclose_boundry(sem_mask, instances):
     inst_b = inst_b.astype(np.uint8)
     return inst_b
 
-def decovn_he(img):
-    
-    ihc_hed = rgb2hed(img)
-    
-    h = 1 - (ihc_hed[:,:,0]-np.min(ihc_hed[:,:,0]))/(np.max(ihc_hed[:,:,0])-np.min(ihc_hed[:,:,0]))
-    e = 1 - (ihc_hed[:,:,1]-np.min(ihc_hed[:,:,1]))/(np.max(ihc_hed[:,:,1])-np.min(ihc_hed[:,:,1]))
-    d = 1 - (ihc_hed[:,:,2]-np.min(ihc_hed[:,:,2]))/(np.max(ihc_hed[:,:,2])-np.min(ihc_hed[:,:,2]))
-    
-    hed = cv2.merge((h,e,d)) * 255
-    
-    return hed.astype(np.uint8)
 
 def add_to_contrast(images, random_state, parents, hooks):
     '''
