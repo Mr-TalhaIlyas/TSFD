@@ -54,9 +54,9 @@ Here, prediction masks are saved in the same format as the true masks. i.e a sin
 ## Sample Output
 
 ```
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Printing calculated metrics on a single split
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Printing calculated metrics
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 | Nuclei Type    |     PQ |
 |----------------|--------|
 | Neoplastic     | 0.5724 |
