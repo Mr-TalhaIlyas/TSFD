@@ -15,19 +15,19 @@ The PanNuke dataset can be downloaded form [here](https://warwick.ac.uk/fac/sci/
 
 Figure below shows full architecture of our proposed TSFD-Net.
 
-![alt text](https://github.com/Mr-TalhaIlyas/TSFD-Net-for-Nuclei-Segmentation-and-Classification/blob/master/screens/img1.png)
+![alt text](https://github.com/Mr-TalhaIlyas/TSFD-Net-for-Nuclei-Segmentation-and-Classification/raw/master/screens/img1.png)
 
 
 ## Results
 
 The Table below compare quantitative results of different models.
 
-![alt text](https://github.com/Mr-TalhaIlyas/TSFD-Net-for-Nuclei-Segmentation-and-Classification/blob/master/screens/img2.png)
+![alt text](https://github.com/Mr-TalhaIlyas/TSFD-Net-for-Nuclei-Segmentation-and-Classification/raw/master/screens/img2.png)
 
 ## Visual Results
 The figure below shows some qualitative results.
 
-![alt text](https://github.com/Mr-TalhaIlyas/TSFD-Net-for-Nuclei-Segmentation-and-Classification/blob/master/screens/img3.png)
+![alt text](https://github.com/Mr-TalhaIlyas/TSFD-Net-for-Nuclei-Segmentation-and-Classification/raw/master/screens/img3.png)
 
 ## Evaluation
 
