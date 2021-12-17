@@ -395,5 +395,6 @@ class MinPooling2D(layers.MaxPooling2D):
   def pooling_function(inputs, pool_size, strides, padding, data_format):
     return -K.pool2d(-inputs, pool_size, strides, padding, data_format,pool_mode='max')
 '''
+Usage Example:
 min_pool = MinPooling2D(pool_size=(2, 2))(prev_layer)
 '''
