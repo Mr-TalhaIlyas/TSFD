@@ -13,7 +13,7 @@ The PanNuke dataset can be downloaded form [here](https://warwick.ac.uk/fac/sci/
 
 Figure below shows full architecture of our proposed TSFD-Net.
 
-![alt text](https://github.com/Mr-TalhaIlyas/TSFD/raw/master/screens/img1.png)
+<center><img src = 'https://github.com/Mr-TalhaIlyas/TSFD/raw/master/screens/img1.png'></center>
 
 
 ## Results
