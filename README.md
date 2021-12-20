@@ -13,19 +13,22 @@ The PanNuke dataset can be downloaded form [here](https://warwick.ac.uk/fac/sci/
 
 Figure below shows full architecture of our proposed TSFD-Net.
 
-<center><img src = 'https://raw.githubusercontent.com/Mr-TalhaIlyas/TSFD/master/screens/img1.png?token=ARO52YNP4LKM7EZHMQ7JEITBX7RBY'></center>
+![alt text](https://gitfront.io/r/talha/6869f722e912f647c023710f40c958495046fca9/TSFD/raw/screens/img1.png)
 
 
 ## Results
 
 The Table below compare quantitative results of different models.
 
-![alt text](https://github.com/Mr-TalhaIlyas/TSFD/raw/master/screens/img2.png)
 
+![alt text](https://gitfront.io/r/talha/6869f722e912f647c023710f40c958495046fca9/TSFD/raw/screens/results.png)
+
+  
 ## Visual Results
 The figure below shows some qualitative results.
 
-![alt text](https://github.com/Mr-TalhaIlyas/TSFD/raw/master/screens/img3.png)
+
+![alt text](https://gitfront.io/r/talha/6869f722e912f647c023710f40c958495046fca9/TSFD/raw/screens/img3.png)
 
 ## Evaluation
 
