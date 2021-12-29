@@ -28,8 +28,7 @@ def SE_block(input_tensor, ratio = 8, activation = tf.nn.swish, Name=None):
     input_tensor = Activation(tf.nn.swish, name='se_act_{}'.format(Name))(input_tensor)
     
     channel_axis = 1 if K.image_data_format() == "channels_first" else -1
-    #filters = input_tensor._keras_shape[channel_axis]
-    filters = int_shape(input_tensor)[channel_axis]
+    filters = input_tensor._keras_shape[channel_axis]
     se_shape = (1, 1, filters)
 
     se = GlobalAveragePooling2D(name='gap_{}'.format(Name))(input_tensor)
@@ -47,12 +46,7 @@ def SE_block(input_tensor, ratio = 8, activation = tf.nn.swish, Name=None):
 
 def BiFPN(p2, p3, p4, p5, p6, p7, bifpn_layer, Dropout_Rate=0.3, Use_Dropout=False):
 
-    '''
-    Top-Down Path
-    '''
-    # Get Intermediate features
     
-    # p6_td = conv[w*p6 + w*resize(p7)]
     p6_td = add([ SE_block(p6, Name='se_td_p6_{}'.format(bifpn_layer)),
                   SE_block(p7, Name='se_td_p7_{}'.format(bifpn_layer))], 
                   name='add_p6p7_{}'.format(bifpn_layer))
@@ -63,7 +57,7 @@ def BiFPN(p2, p3, p4, p5, p6, p7, bifpn_layer, Dropout_Rate=0.3, Use_Dropout=Fal
     if Use_Dropout:
         p6_td = SpatialDropout2D(Dropout_Rate, name='drop_p6td_bifpn_{}'.format(bifpn_layer))(p6_td)
         
-    # p5_td = conv[w*p5 + w*resize(p6_td)]
+    
     p5_td = add([ SE_block(p5, Name='se_td_p5_{}'.format(bifpn_layer)),
                   SE_block(ReSize(p6_td, mode='upsample'), Name='se_td_p6td_{}'.format(bifpn_layer))], 
                   name='add_p5p6td_{}'.format(bifpn_layer))
@@ -85,7 +79,7 @@ def BiFPN(p2, p3, p4, p5, p6, p7, bifpn_layer, Dropout_Rate=0.3, Use_Dropout=Fal
     if Use_Dropout:
         p4_td = SpatialDropout2D(Dropout_Rate, name='drop_p4td_bifpn_{}'.format(bifpn_layer))(p4_td)
     
-    # p3_td = conv[w*p3 + w*resize(p4_td)]
+    
     p3_td = add([ SE_block(p3, Name='se_td_p3_{}'.format(bifpn_layer)),
                   SE_block(ReSize(p4_td, mode='upsample'), Name='se_td_p4td_{}'.format(bifpn_layer))], 
                   name='add_p3p4td_{}'.format(bifpn_layer))
@@ -96,8 +90,7 @@ def BiFPN(p2, p3, p4, p5, p6, p7, bifpn_layer, Dropout_Rate=0.3, Use_Dropout=Fal
     if Use_Dropout:
         p3_td = SpatialDropout2D(Dropout_Rate, name='drop_p3td_bifpn_{}'.format(bifpn_layer))(p3_td)
         
-    # since p2 is the most coarse pyramid level there is no feature fusion here
-    # p2_out = conv[w*p2 + w*resize(p3_td)]
+    
     p2_out = add([ SE_block(p2, Name='se_td_p2_{}'.format(bifpn_layer)),
                   SE_block(ReSize(p3_td, mode='upsample'), Name='se_td_p3td_{}'.format(bifpn_layer))], 
                   name='add_p2p3td_{}'.format(bifpn_layer))
@@ -110,7 +103,7 @@ def BiFPN(p2, p3, p4, p5, p6, p7, bifpn_layer, Dropout_Rate=0.3, Use_Dropout=Fal
     '''
     Bottom-Up Path
     '''
-    # Get Output features
+   
     
     p3_out = add([ SE_block(p3, Name='se_bu_p3_{}'.format(bifpn_layer)),
                    SE_block(p3_td, Name='se_bu_p3td_{}'.format(bifpn_layer)),
@@ -172,11 +165,9 @@ def BiFPN(p2, p3, p4, p5, p6, p7, bifpn_layer, Dropout_Rate=0.3, Use_Dropout=Fal
 def Half_BiFPN(p2, p3, p4, p5, p6, p7, bifpn_layer, Dropout_Rate=0.1, Use_Dropout=False):
 
     '''
-    Only top-Down Path
+    top-Down Path
     '''
-    # Get Intermediate features
     
-    # p6_td = conv[w*p6 + w*resize(p7)]
     p6_td = add([ SE_block(p6, Name='se_td_p6_{}'.format(bifpn_layer)),
                   SE_block(p7, Name='se_td_p7_{}'.format(bifpn_layer))], 
                   name='add_p6p7_{}'.format(bifpn_layer))
@@ -198,7 +189,7 @@ def Half_BiFPN(p2, p3, p4, p5, p6, p7, bifpn_layer, Dropout_Rate=0.1, Use_Dropou
     if Use_Dropout:
         p5_td = SpatialDropout2D(Dropout_Rate, name='drop_p5td_bifpn_{}'.format(bifpn_layer))(p5_td)
         
-    # p4_td = conv[w*p4 + w*resize(p5_td)]
+    
     p4_td = add([ SE_block(p4, Name='se_td_p4_{}'.format(bifpn_layer)),
                   SE_block(p5_td, Name='se_td_p5td_{}'.format(bifpn_layer))], 
                   name='add_p4p5td_{}'.format(bifpn_layer))
@@ -209,7 +200,7 @@ def Half_BiFPN(p2, p3, p4, p5, p6, p7, bifpn_layer, Dropout_Rate=0.1, Use_Dropou
     if Use_Dropout:
         p4_td = SpatialDropout2D(Dropout_Rate, name='drop_p4td_bifpn_{}'.format(bifpn_layer))(p4_td)
     
-    # p3_td = conv[w*p3 + w*resize(p4_td)]
+   
     p3_td = add([ SE_block(p3, Name='se_td_p3_{}'.format(bifpn_layer)),
                   SE_block(ReSize(p4_td, mode='upsample'), Name='se_td_p4td_{}'.format(bifpn_layer))], 
                   name='add_p3p4td_{}'.format(bifpn_layer))
@@ -220,8 +211,7 @@ def Half_BiFPN(p2, p3, p4, p5, p6, p7, bifpn_layer, Dropout_Rate=0.1, Use_Dropou
     if Use_Dropout:
         p3_td = SpatialDropout2D(Dropout_Rate, name='drop_p3td_bifpn_{}'.format(bifpn_layer))(p3_td)
         
-    # since p2 is the most coarse pyramid level there is no feature fusion here
-    # p2_out = conv[w*p2 + w*resize(p3_td)]
+    
     p2_out = add([ SE_block(p2, Name='se_td_p2_{}'.format(bifpn_layer)),
                   SE_block(ReSize(p3_td, mode='upsample'), Name='se_td_p3td_{}'.format(bifpn_layer))], 
                   name='add_p2p3td_{}'.format(bifpn_layer))
@@ -238,11 +228,8 @@ def Half_BiFPN(p2, p3, p4, p5, p6, p7, bifpn_layer, Dropout_Rate=0.1, Use_Dropou
 def OP_BiFPN(p2, p3, p4, p5, p6, p7, bifpn_layer, Dropout_Rate=0.3, Use_Dropout=False):
 
     '''
-    Top-Down Path for Segmentaiton
+    Top-Down Path 
     '''
-    # Get Intermediate features
-    
-    # p6_td = conv[w*p6 + w*resize(p7)]
     p6_seg = add([ SE_block(p6, Name='se_seg_p6_{}'.format(bifpn_layer)),
                   SE_block(p7, Name='se_seg_p7_{}'.format(bifpn_layer))], 
                   name='add_p6p7_seg_{}'.format(bifpn_layer))
@@ -253,7 +240,6 @@ def OP_BiFPN(p2, p3, p4, p5, p6, p7, bifpn_layer, Dropout_Rate=0.3, Use_Dropout=
     if Use_Dropout:
         p6_seg = SpatialDropout2D(Dropout_Rate, name='drop_p6seg_bifpn_{}'.format(bifpn_layer))(p6_seg)
         
-    # p5_td = conv[w*p5 + w*resize(p6_td)]
     p5_seg = add([ SE_block(p5, Name='se_seg_p5_{}'.format(bifpn_layer)),
                   SE_block(ReSize(p6_seg, mode='upsample'), Name='se_seg_p6seg_{}'.format(bifpn_layer))], 
                   name='add_p5p6seg_{}'.format(bifpn_layer))
@@ -264,7 +250,6 @@ def OP_BiFPN(p2, p3, p4, p5, p6, p7, bifpn_layer, Dropout_Rate=0.3, Use_Dropout=
     if Use_Dropout:
         p5_seg = SpatialDropout2D(Dropout_Rate, name='drop_p5seg_bifpn_{}'.format(bifpn_layer))(p5_seg)
         
-    # p4_td = conv[w*p4 + w*resize(p5_td)]
     p4_seg = add([ SE_block(p4, Name='se_seg_p4_{}'.format(bifpn_layer)),
                   SE_block(p5_seg, Name='se_seg_p5seg_{}'.format(bifpn_layer))], 
                   name='add_p4p5seg_{}'.format(bifpn_layer))
@@ -275,7 +260,6 @@ def OP_BiFPN(p2, p3, p4, p5, p6, p7, bifpn_layer, Dropout_Rate=0.3, Use_Dropout=
     if Use_Dropout:
         p4_seg = SpatialDropout2D(Dropout_Rate, name='drop_p4seg_bifpn_{}'.format(bifpn_layer))(p4_seg)
     
-    # p3_td = conv[w*p3 + w*resize(p4_td)]
     p3_seg = add([ SE_block(p3, Name='se_seg_p3_{}'.format(bifpn_layer)),
                   SE_block(ReSize(p4_seg, mode='upsample'), Name='se_seg_p4seg_{}'.format(bifpn_layer))], 
                   name='add_p3p4seg_{}'.format(bifpn_layer))
@@ -286,8 +270,6 @@ def OP_BiFPN(p2, p3, p4, p5, p6, p7, bifpn_layer, Dropout_Rate=0.3, Use_Dropout=
     if Use_Dropout:
         p3_seg = SpatialDropout2D(Dropout_Rate, name='drop_p3seg_bifpn_{}'.format(bifpn_layer))(p3_seg)
         
-    # since p2 is the most coarse pyramid level there is no feature fusion here
-    # p2_out = conv[w*p2 + w*resize(p3_td)]
     p2_seg = add([ SE_block(p2, Name='se_seg_p2_{}'.format(bifpn_layer)),
                   SE_block(ReSize(p3_seg, mode='upsample'), Name='se_seg_p3seg_{}'.format(bifpn_layer))], 
                   name='add_p2p3seg_{}'.format(bifpn_layer))
@@ -298,11 +280,8 @@ def OP_BiFPN(p2, p3, p4, p5, p6, p7, bifpn_layer, Dropout_Rate=0.3, Use_Dropout=
     
     
     '''
-    Top-Down Path for Instance Boundaries
+    Top-Down Path 
     '''
-    # Get Intermediate features
-    
-    # p6_td = conv[w*p6 + w*resize(p7)]
     p6_inst = add([ SE_block(p7, Name='se_inst_p7_{}'.format(bifpn_layer)),
                     SE_block(p6_seg, Name='se_p6seg_inst_{}'.format(bifpn_layer))], 
                     name='add_p6p7p6seg_inst_{}'.format(bifpn_layer))
@@ -313,7 +292,6 @@ def OP_BiFPN(p2, p3, p4, p5, p6, p7, bifpn_layer, Dropout_Rate=0.3, Use_Dropout=
     if Use_Dropout:
         p6_inst = SpatialDropout2D(Dropout_Rate, name='drop_p6inst_bifpn_{}'.format(bifpn_layer))(p6_inst)
         
-    # p5_td = conv[w*p5 + w*resize(p6_td)]
     p5_inst = add([ SE_block(ReSize(p6, mode='upsample'), Name='se_inst_p6_{}'.format(bifpn_layer)),
                     SE_block(ReSize(p6_inst, mode='upsample'), Name='se_inst_p6inst_{}'.format(bifpn_layer)),
                     SE_block(p5_seg, Name='se_p5seg_inst_{}'.format(bifpn_layer))], 
@@ -325,7 +303,6 @@ def OP_BiFPN(p2, p3, p4, p5, p6, p7, bifpn_layer, Dropout_Rate=0.3, Use_Dropout=
     if Use_Dropout:
         p5_inst = SpatialDropout2D(Dropout_Rate, name='drop_p5inst_bifpn_{}'.format(bifpn_layer))(p5_inst)
         
-    # p4_td = conv[w*p4 + w*resize(p5_td)]
     p4_inst = add([ SE_block(p5, Name='se_inst_p5_{}'.format(bifpn_layer)),
                     SE_block(p5_inst, Name='se_inst_p5inst_{}'.format(bifpn_layer)),
                     SE_block(p4_seg, Name='se_p4seg_inst_{}'.format(bifpn_layer))], 
@@ -337,7 +314,6 @@ def OP_BiFPN(p2, p3, p4, p5, p6, p7, bifpn_layer, Dropout_Rate=0.3, Use_Dropout=
     if Use_Dropout:
         p4_inst = SpatialDropout2D(Dropout_Rate, name='drop_p4inst_bifpn_{}'.format(bifpn_layer))(p4_inst)
     
-    # p3_td = conv[w*p3 + w*resize(p4_td)]
     p3_inst = add([ SE_block(ReSize(p4, mode='upsample'), Name='se_inst_p4_{}'.format(bifpn_layer)),
                     SE_block(ReSize(p4_inst, mode='upsample'), Name='se_inst_p4inst_{}'.format(bifpn_layer)),
                     SE_block(p3_seg, Name='se_p3seg_inst_{}'.format(bifpn_layer))], 
@@ -349,8 +325,6 @@ def OP_BiFPN(p2, p3, p4, p5, p6, p7, bifpn_layer, Dropout_Rate=0.3, Use_Dropout=
     if Use_Dropout:
         p3_inst = SpatialDropout2D(Dropout_Rate, name='drop_p3inst_bifpn_{}'.format(bifpn_layer))(p3_inst)
         
-    # since p2 is the most coarse pyramid level there is no feature fusion here
-    # p2_out = conv[w*p2 + w*resize(p3_td)]
     p2_inst = add([ SE_block(ReSize(p3, mode='upsample'), Name='se_inst_p3_{}'.format(bifpn_layer)),
                     SE_block(ReSize(p3_inst, mode='upsample'), Name='se_inst_p3inst_{}'.format(bifpn_layer)),
                     SE_block(p2_seg, Name='se_p2seg_inst_{}'.format(bifpn_layer))], 
