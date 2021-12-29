@@ -20,16 +20,6 @@ from tensorflow.keras.layers import Dropout, SpatialDropout2D
 
 
 
-def Upsampling_block(input_tensor, op_channels):
-    '''Upsamples the feature map 2x resolution'''
-    x1 = UpSampling2D(interpolation='bilinear')(input_tensor)
-    x1 = Conv2D(op_channels, (3, 3), strides=(1, 1), padding='same')(x1)
-    
-    x2 = Conv2DTranspose(op_channels, (3, 3), strides=(2, 2), padding='same')(input_tensor)
-    
-    x_add = add([x1, x2])
-    op = Activation(tf.nn.swish)(x_add)
-    return op
     
 def SE_block(input_tensor, ratio = 8, activation = tf.nn.swish, Name=None):
     
@@ -53,24 +43,7 @@ def SE_block(input_tensor, ratio = 8, activation = tf.nn.swish, Name=None):
     x = multiply([input_tensor, se], name='mul_{}'.format(Name))
     return x
 
-def ReSize(input_tensor, mode='downsample'):
-    '''
-    A resizing layer upsamples or downsamples the input tesnor's h/w by a factor of 2.
-    Parameters
-    ----------
-    input_tensor : tesnor of shape [batch, height, width, channels]
-    mode : TYPE of resizing 'downsapling' or 'upsampling'
 
-    Returns
-    -------
-    resized tensor
-    '''
-    _, h, w, _ = int_shape(input_tensor)
-    if mode == 'downsample':
-        op = Resizing(height=h//2, width=w//2, interpolation='bilinear')(input_tensor)
-    elif mode == 'upsample':
-        op = Resizing(height=h*2, width=w*2, interpolation='bilinear')(input_tensor)
-    return op
 
 def BiFPN(p2, p3, p4, p5, p6, p7, bifpn_layer, Dropout_Rate=0.3, Use_Dropout=False):
 
@@ -139,7 +112,6 @@ def BiFPN(p2, p3, p4, p5, p6, p7, bifpn_layer, Dropout_Rate=0.3, Use_Dropout=Fal
     '''
     # Get Output features
     
-    # p3_out = conv[w*p3 + w*p3td + w*resize(p2_out)]
     p3_out = add([ SE_block(p3, Name='se_bu_p3_{}'.format(bifpn_layer)),
                    SE_block(p3_td, Name='se_bu_p3td_{}'.format(bifpn_layer)),
                    SE_block(ReSize(p2_out, mode='downsample'), Name='se_bu_p2out_{}'.format(bifpn_layer))], 
@@ -151,7 +123,6 @@ def BiFPN(p2, p3, p4, p5, p6, p7, bifpn_layer, Dropout_Rate=0.3, Use_Dropout=Fal
     if Use_Dropout:
         p3_out = SpatialDropout2D(Dropout_Rate, name='drop_p3out_bifpn_{}'.format(bifpn_layer))(p3_out)
         
-    # p4_out = conv[w*p4 + w*p4td + w*resize(p3_out)]
     p4_out = add([ SE_block(p4, Name='se_bu_p4_{}'.format(bifpn_layer)),
                    SE_block(p4_td, Name='se_bu_p4td_{}'.format(bifpn_layer)),
                    SE_block(ReSize(p3_out, mode='downsample'), Name='se_bu_p3out_{}'.format(bifpn_layer))], 
@@ -163,7 +134,6 @@ def BiFPN(p2, p3, p4, p5, p6, p7, bifpn_layer, Dropout_Rate=0.3, Use_Dropout=Fal
     if Use_Dropout:
         p4_out = SpatialDropout2D(Dropout_Rate, name='drop_p4out_bifpn_{}'.format(bifpn_layer))(p4_out)
         
-    # p5_out = conv[w*p5 + w*p5td + w*resize(p4_out)]
     p5_out = add([ SE_block(p5, Name='se_bu_p5_{}'.format(bifpn_layer)),
                    SE_block(p5_td, Name='se_bu_p5td_{}'.format(bifpn_layer)),
                    SE_block(p4_out, Name='se_bu_p4out_{}'.format(bifpn_layer))], 
@@ -175,7 +145,6 @@ def BiFPN(p2, p3, p4, p5, p6, p7, bifpn_layer, Dropout_Rate=0.3, Use_Dropout=Fal
     if Use_Dropout:
         p5_out = SpatialDropout2D(Dropout_Rate, name='drop_p5out_bifpn_{}'.format(bifpn_layer))(p5_out)
         
-    # p6_out = conv[w*p6 + w*p6td + w*resize(p5_out)]
     p6_out = add([ SE_block(p6, Name='se_bu_p6_{}'.format(bifpn_layer)),
                    SE_block(p6_td, Name='se_bu_p6td_{}'.format(bifpn_layer)),
                    SE_block(ReSize(p5_out, mode='downsample'), Name='se_bu_p5out_{}'.format(bifpn_layer))], 
@@ -187,7 +156,6 @@ def BiFPN(p2, p3, p4, p5, p6, p7, bifpn_layer, Dropout_Rate=0.3, Use_Dropout=Fal
     if Use_Dropout:
         p6_out = SpatialDropout2D(Dropout_Rate, name='drop_p6out_bifpn_{}'.format(bifpn_layer))(p6_out)
     
-    # p7_out = conv[w*p7 + w*resize(p6_out)]
     p7_out = add([ SE_block(p7, Name='se_bu_p7_{}'.format(bifpn_layer)),
                    SE_block(p6_out, Name='se_bu_p6out_{}'.format(bifpn_layer))], 
                    name='add_p7p6out_{}'.format(bifpn_layer))
