@@ -74,14 +74,13 @@ seq = iaa.Sequential(
 
 def augmenter(img, sem, inst, h, frame):
         # print('shape aug')
-        _aug = seq._to_deterministic() #This line is very important because without this one each pair of image and mask will get augumented differently
-        img = _aug.augment_images([img]) # USe square brackets because the data has shape (HxWxCh) and is a numpy array
+        _aug = seq._to_deterministic() 
+        img = _aug.augment_images([img]) 
         sem = _aug.augment_images([sem])
         inst = _aug.augment_images([inst])
         h = _aug.augment_images([h])
         frame = _aug.augment_images([frame])
         # this will return a list of img arrays and when we convert them to array 
-        # dim will be [1xHxWxCh] so we'll remove the 0th axis of this one
         img = np.squeeze(np.asarray(img)) 
         sem = np.squeeze(np.asarray(sem)) 
         inst = np.squeeze(np.asarray(inst))
