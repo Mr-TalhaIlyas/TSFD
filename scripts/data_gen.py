@@ -71,32 +71,8 @@ seq = iaa.Sequential(
         ], random_order=True),
     ], random_order=True)
 
-# only apply on images
-input_augs = iaa.Sequential(
-            [
-            iaa.OneOf(
-                [   
-                # Blur each image using a median over neihbourhoods that have a random size between 3x3 and 7x7
-                sometimes(iaa.MedianBlur(k=(3, 7))),
-                # blur images using gaussian kernels with random value (sigma) from the interval [a, b]
-                sometimes(iaa.GaussianBlur(sigma=(0.0, 1.0))),
-                sometimes(iaa.AdditiveGaussianNoise(loc=0, scale=(0.0, 0.05 * 255), per_channel=0.5))
-                ]
-            ),
-            iaa.Sequential(
-                [
-                sometimes(iaa.AddToHue((-8, 8))),
-                sometimes(iaa.AddToSaturation((-20, 20))),
-                sometimes(iaa.AddToBrightness((-26, 26))),
-                sometimes(iaa.Lambda(func_images = add_to_contrast))
-                ], random_order=True)
-            ], random_order=True)
-
 
 def augmenter(img, sem, inst, h, frame):
-    # just so half of the time seq is run and rest input_augs
-    num = np.random.randint(1, 100)
-    if (num % 2) == 0:
         # print('shape aug')
         _aug = seq._to_deterministic() #This line is very important because without this one each pair of image and mask will get augumented differently
         img = _aug.augment_images([img]) # USe square brackets because the data has shape (HxWxCh) and is a numpy array
@@ -111,35 +87,8 @@ def augmenter(img, sem, inst, h, frame):
         inst = np.squeeze(np.asarray(inst))
         h = np.squeeze(np.asarray(h))
         frame = np.squeeze(np.asarray(frame))
-    
-    elif (num % 2) != 0:
-        # print('noise aug')
-        ip_aug = input_augs._to_deterministic()
-        img = ip_aug.augment_image(img)
-        h = ip_aug.augment_image(h)
-        # sem and inst masks will not be augmneted in this case
         
     return img, sem, inst, h, frame
-
-def make_data_list(main_dir):
-    # will return the list of all the images in a dir
-    # get each dir
-    imgs_dir = main_dir + 'images' 
-    sem_masks_dir = main_dir + 'sem_masks'
-    inst_mask_dir = main_dir + 'inst_masks'
-    
-    # get all the files in a dir
-    imgs_list = sorted(os.listdir(imgs_dir), key=numericalSort)
-    imgs_paths = [os.path.join(imgs_dir, fname) for fname in imgs_list]
-    
-    sem_masks_list = sorted(os.listdir(sem_masks_dir), key=numericalSort)
-    sem_masks_paths = [os.path.join(sem_masks_dir, fname) for fname in sem_masks_list]
-    
-    inst_masks_list = sorted(os.listdir(inst_mask_dir), key=numericalSort)
-    inst_masks_paths = [os.path.join(inst_mask_dir, fname) for fname in inst_masks_list]
-    
-    
-    return imgs_paths, sem_masks_paths, inst_masks_paths
 
 def hist_eq(img):
     
@@ -204,12 +153,12 @@ class Tumor_Data_Generator(Sequence) :
     ----------
     imgs_paths : dir path containing right frames
     sem_masks_paths : dir path containing left frames
-    batch_size : batch size [type = int] e.g. -> 4
-    modelip_img_w : image width [type = int] e.g. -> 1024
-    modelip_img_h : image hight [type = int] e.g. -> 512
-    shuffle_lr : shuffle the left-right frames on inputs of encoder of CNN or not [type=Bool]
-    data_augment : augment the data or not [type=Bool]
-    shuffle : shuffle the data after every epoch or not. [type=Bool]
+    batch_size : batch size 
+    modelip_img_w : image width 
+    modelip_img_h : image hight 
+    shuffle_lr : shuffle the left-right frames on inputs of encoder of CNN or not
+    data_augment : augment the data or not 
+    shuffle : shuffle the data after every epoch or not
     Returns
     -------
     Tensorflow/Keras Datagenerator having both inputs and outputs.
@@ -274,21 +223,19 @@ class Tumor_Data_Generator(Sequence) :
             clf_label[idx] = 1
       names.append(os.path.basename(img_path))
       image, semantic, instance, h_comp = Tumor_IO(img_path, sem_mask, inst_mask, self.modelip_img_w, self.modelip_img_h, self.data_augment)
-      #######
       img_n_h_comp = np.concatenate((image, h_comp), axis=-1)
-      #######
       train_image.append(img_n_h_comp)
-      # train_h.append(h_comp)
+      train_h.append(h_comp)
       train_label_seg.append(semantic)
       train_label_inst.append(instance)
       train_label_clf.append(clf_label)
       
-      # this  is just to save data in directory to see if generator is working
-      # op = show_results((np.array(train_image)[0,::])*255, np.array(train_label)[0,::], classes_name, self.modelip_img_w, self.modelip_img_h)
-      # cv2.imwrite('/home/user01/data_ssd/Talha/data_gen_test/img_{}.jpg'.format(self.i+1), op)
-      # self.i = self.i+1
-      outputs = (np.array(train_label_clf), np.array(train_label_seg), np.array(train_label_inst))
-      #outputs = (np.array(train_label_seg), np.array(train_label_inst))
       
-    return np.array(train_image), outputs  #, names
+      op = show_results((np.array(train_image)[0,::])*255, np.array(train_label)[0,::], classes_name, self.modelip_img_w, self.modelip_img_h)
+      cv2.imwrite('/home/user01/data_ssd/Talha/data_gen_test/img_{}.jpg'.format(self.i+1), op)
+      self.i = self.i+1
+      outputs = (np.array(train_label_clf), np.array(train_label_seg), np.array(train_label_inst))
+      
+      
+    return np.array(train_image), outputs
 
