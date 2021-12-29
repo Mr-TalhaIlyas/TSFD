@@ -177,12 +177,7 @@ input_img = Input((im_height, im_width, input_ch), name='ip')
 
 model = efficent_pet_203_clf(input_img, output_ch, bifpn_ch = BiFPN_ch, dropout_rate=init_dropout, use_dropout=True)
 
-model.compile(optimizer=SGD(momentum=0.9), loss={'clf_out': FocalLoss,
-                                                 'seg_out': SEG_Loss,   
-                                                 'inst_out': INST_Loss}, 
-                                          metrics={'clf_out':'accuracy',
-                                                   'seg_out': mean_iou,
-                                                   'inst_out': mean_iou}) 
+model.compile(optimizer=SGD(momentum=0.9), loss={ FocalLoss,SEG_Loss, INST_Loss}, metrics={'accuracy', mean_iou, mean_iou}) 
 
 # # print model summary on txt file
 #model.summary()
