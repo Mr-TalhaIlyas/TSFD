@@ -45,7 +45,9 @@ We mainly follow the original implementation with some minor improvements for ex
 ## Citation 
 
 ```
-Ilyas, T., Mannan, Z.I., Khan, A., Azam, S., Kim, H. and De Boer, F., 2022. TSFD-Net: Tissue specific feature distillation network for nuclei segmentation and classification. Neural Networks.
+Ilyas, T., Mannan, Z.I., Khan, A., Azam, S., Kim, H. and De Boer, F., 2022. 
+TSFD-Net: Tissue specific feature distillation network for nuclei segmentation and classification. 
+Neural Networks.
 ```
 
 
