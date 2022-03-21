@@ -12,7 +12,7 @@ The PanNuke dataset can be downloaded form [here](https://warwick.ac.uk/fac/sci/
 
 ## Dataset Preparation
 
-You can follow the steps highlighted in the following [repo]() to prepare the dataset for training.
+You can follow the steps highlighted in the following [repo](https://github.com/Mr-TalhaIlyas/Prerpcessing-PanNuke-Nuclei-Instance-Segmentation-Dataset) to prepare the dataset for training.
 
 ## Network Architecture:
 
