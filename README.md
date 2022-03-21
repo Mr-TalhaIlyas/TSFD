@@ -10,6 +10,9 @@ Nuclei segmentation and classification using hematoxylin and eosin-stained histo
 
 The PanNuke dataset can be downloaded form [here](https://warwick.ac.uk/fac/sci/dcs/research/tia/data/pannuke).
 
+## Dataset Preparation
+
+You can follow the steps highlighted in the following [repo]() to prepare the dataset for training.
 
 ## Network Architecture:
 
