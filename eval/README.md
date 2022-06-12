@@ -91,9 +91,13 @@ Printing calculated metrics
 ## Citation 
 
 ```
-Coming Soon IA...!
-
-paper under review in Elsevier Neural Networks ;)
+@article{ilyas2022tsfd,
+  title={TSFD-Net: Tissue specific feature distillation network for nuclei segmentation and classification},
+  author={Ilyas, Talha and Mannan, Zubaer Ibna and Khan, Abbas and Azam, Sami and Kim, Hyongsuk and De Boer, Friso},
+  journal={Neural Networks},
+  year={2022},
+  publisher={Elsevier}
+}
 ```
 
 ## Referneces
