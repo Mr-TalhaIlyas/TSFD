@@ -20,8 +20,7 @@ import matplotlib.pyplot as plt
 from IPython.display import clear_output
 from tabulate import tabulate
 from util import profile, keras_model_memory_usage, memory_usage, model_profile
-from callbacks import PlotLearning, PredictionCallback, CustomLearningRateScheduler, CustomDropoutScheduler
-from callbacks import WarmUpCosineDecayScheduler, CustomKernelRegularizer, SGDRScheduler
+from callbacks import WarmUpCosineDecayScheduler
 from losses import Weighted_BCEnDice_loss, HED_loss, triplet_loss, FocalLoss, FocalTverskyLoss, TverskyLoss, SEG_Loss, INST_Loss
 from metrics import dice_coef, mean_iou, binary_iou, Class_Wise_IOU, strict_iou
 from plotting import plot_results, gray_2_rgb, tf_gray2rgb, prediction_writer, sigmoid_activation, softmax_activation
@@ -196,21 +195,13 @@ table =  model_profile(model, Batch_size, initial_lr, w_decay_value, init_dropou
                   Enc_Dropout_Type, Dec_Dropout_Type , Blocksize)
 
 
-# Custom Callbacks
-plot_losses = PlotLearning(table) 
-#show_pred = PredictionCallback(path_train, im_height, im_width)
-DO_schedule = CustomDropoutScheduler(dropout_schedule, dropout_after_epoch)
-KR_schedule = CustomKernelRegularizer()
-if lr_schedule == 'SGDR_lr' :
-    LR_schedule = SGDRScheduler(min_lr=1e-7,max_lr=initial_lr,steps_per_epoch=num_images/Batch_size,
-                                lr_decay=lr_decay,cycle_length=cycle,mult_factor=mul_factor)
-elif lr_schedule == 'SGDR_warmup':
-    LR_schedule = WarmUpCosineDecayScheduler(learning_rate_base=initial_lr,
-                                             total_steps=int(Epoch * num_images/Batch_size),
-                                             warmup_learning_rate=0.0,
-                                             warmup_steps=int(warmup_epoch * num_images/Batch_size))
-else:
-    LR_schedule = CustomLearningRateScheduler(lr_schedule, initial_lr, lr_decay, Epoch, drop_epoch, power)
+
+
+LR_schedule = WarmUpCosineDecayScheduler(learning_rate_base=initial_lr,
+                                         total_steps=int(Epoch * num_images/Batch_size),
+                                         warmup_learning_rate=0.0,
+                                         warmup_steps=int(warmup_epoch * num_images/Batch_size))
+
 log_tb = TensorBoard(
     log_dir='/home/user01/data_ssd/Talha/pannuke/pan_final/logs/{}/'.format(log_name))
 
