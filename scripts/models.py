@@ -1,5 +1,4 @@
 import tensorflow as tf
-from layers import MaxPoolingWithArgmax2D, MaxUnpooling2D, MinPooling2D
 if int(str(tf.__version__)[0]) == 2:
     from tensorflow.keras.models import Model
     from tensorflow.keras.regularizers import l2, l1
@@ -22,21 +21,7 @@ if int(str(tf.__version__)[0]) == 1:
 
 from bifpn import BiFPN, ReSize, Half_BiFPN, OP_BiFPN, Upsampling_block
 import copy
-def use_customdropout():
-    use_mydropout = False     # 1 for True
-    return use_mydropout  # 0 for False
 
-use_mydropout = use_customdropout()
-
-from layers import DropBlock2D
-
-if use_mydropout == True:
-        from layers import DropBlock2D, Dropout, SpatialDropout2D
-elif use_mydropout == False:
-    if int(str(tf.__version__)[0]) == 1:
-        from keras.layers import Dropout, SpatialDropout2D
-    if int(str(tf.__version__)[0]) == 2:
-        from tensorflow.keras.layers import Dropout, SpatialDropout2D
         
 
 '''
@@ -63,17 +48,7 @@ elif use_mydropout == False:
         from keras.layers import Dropout, SpatialDropout2D
     if tf.__version__ == '2.2.0' or tf.__version__ == '2.0.0' or tf.__version__ == '2.3.0'  or tf.__version__ == '2.2.0-rc2':
         from tensorflow.keras.layers import Dropout, SpatialDropout2D
-        
-def DROPOUT(input_tensor, dropout_rate, Block_size, dropout_method = 'VD'):
-    
-    if dropout_method == 'DB':
-        x = DropBlock2D(block_size=Block_size, rate=dropout_rate)(input_tensor)
-    elif dropout_method == 'VD':
-        x = Dropout(dropout_rate)(input_tensor)
-    elif dropout_method == 'SD':
-        x = SpatialDropout2D(dropout_rate)(input_tensor)
-        
-    return x
+ 
 
 
 #%%
