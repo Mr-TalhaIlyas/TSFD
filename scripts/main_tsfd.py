@@ -207,7 +207,7 @@ log_tb = TensorBoard(
 
 print(table)
 
-callbacks = [LR_schedule, log_tb, plot_losses,
+callbacks = [LR_schedule, log_tb,
             ModelCheckpoint('/home/user01/data_ssd/Talha/pannuke/pan_final/weights/{}.h5'.format(weight_name), verbose=1,
                             save_best_only=True, save_weights_only=True), # Save weights if val loss is improved
             CSVLogger('/home/user01/data_ssd/Talha/pannuke/pan_final/logs/{}.csv'.format(log_name), separator=',', append=True)
