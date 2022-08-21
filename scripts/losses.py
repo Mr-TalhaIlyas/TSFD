@@ -101,10 +101,74 @@ def Weighted_BCEnDice_loss(y_true, y_pred):
     return loss
 
 
+#Tensorflow / Keras
+def FocalTverskyLoss(y_true, y_pred, smooth=1e-6):
+        
+
+        #if y_pred.shape[-1] <= 1:
+        #    alpha = 0.3
+        #    beta = 0.7
+        #    gamma = 4/3 #5.
+        #   y_pred = tf.keras.activations.sigmoid(y_pred)
+            #y_true = y_true[:,:,:,0:1]
+        #elif y_pred.shape[-1] >= 2:
+        #    alpha = 0.3
+        #    beta = 0.7
+        #    gamma = 4/3 #3.
+        #    y_pred = tf.keras.activations.softmax(y_pred, axis=-1)
+        #    y_true = K.squeeze(y_true, 3)
+        #   y_true = tf.cast(y_true, "int32")
+        #    y_true = tf.one_hot(y_true, num_class, axis=-1)
+        
+        
+        y_true = K.cast(y_true, 'float32')
+        y_pred = K.cast(y_pred, 'float32')
+        #flatten label and prediction tensors
+        inputs = K.flatten(y_pred)
+        targets = K.flatten(y_true)
+        
+        #True Positives, False Positives & False Negatives
+        TP = K.sum((inputs * targets))
+        FP = K.sum(((1-targets) * inputs))
+        FN = K.sum((targets * (1-inputs)))
+               
+        Tversky = (TP + smooth) / (TP + alpha*FP + beta*FN + smooth)  
+        FocalTversky = K.pow((1 - Tversky), gamma)
+        
+        return FocalTversky
 
 
 
-
-
+#Tensorflow / Keras
+def Combo_loss(y_true, y_pred, smooth=1):
+ 
+ e = K.epsilon()
+ #if y_pred.shape[-1] <= 1:
+ #  ALPHA = 0.8    # < 0.5 penalises FP more, > 0.5 penalises FN more
+ #  CE_RATIO = 0.5 # weighted contribution of modified CE loss compared to Dice loss
+ #  y_pred = tf.keras.activations.sigmoid(y_pred)
+ #elif y_pred.shape[-1] >= 2:
+ #  ALPHA = 0.3    # < 0.5 penalises FP more, > 0.5 penalises FN more
+ #  CE_RATIO = 0.7 # weighted contribution of modified CE loss compared to Dice loss
+ #  y_pred = tf.keras.activations.softmax(y_pred, axis=-1)
+ #  y_true = K.squeeze(y_true, 3)
+ #  y_true = tf.cast(y_true, "int32")
+ #  y_true = tf.one_hot(y_true, num_class, axis=-1)
+ 
+ # cast to float32 datatype
+ y_true = K.cast(y_true, 'float32')
+ y_pred = K.cast(y_pred, 'float32')
+ 
+ targets = K.flatten(y_true)
+ inputs = K.flatten(y_pred)
+ 
+ intersection = K.sum(targets * inputs)
+ dice = (2. * intersection + smooth) / (K.sum(targets) + K.sum(inputs) + smooth)
+ inputs = K.clip(inputs, e, 1.0 - e)
+ out = - (ALPHA * ((targets * K.log(inputs)) + ((1 - ALPHA) * (1.0 - targets) * K.log(1.0 - inputs))))
+ weighted_ce = K.mean(out, axis=-1)
+ combo = (CE_RATIO * weighted_ce) - ((1 - CE_RATIO) * dice)
+ 
+ return combo
     
     
