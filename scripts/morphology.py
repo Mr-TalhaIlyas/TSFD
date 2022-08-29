@@ -239,3 +239,183 @@ def remove_small_obj_n_holes(seg_op, min_area=10, kernel_size=3):
     
     return a
 
+def assgin_via_majority(seg):
+    '''
+    Parameters
+    ----------
+    seg : 2D array containing unique pixel values for each class
+    Returns
+    -------
+    x: 2D array where an instance is assigned to be the class of most frequently
+       occuring pixel value (as each unique pixel value represent a class).
+    '''
+    a = copy.deepcopy(seg).astype(np.uint8)
+    # 1st convert to binary mask
+    _, th = cv2.threshold(a, 0, 1, cv2.THRESH_BINARY)
+    # now measure label
+    b = measure.label(th, connectivity=2, background=0)
+    # now make n unique channels n= no. of labels measured
+    c = gray2encoded(b, len(np.unique(b)))
+    
+    op = np.zeros(c.shape)
+    for i in range(len(np.unique(b))-1):
+        temp = np.multiply(c[:,:,i+1], a)# multiply each channel element wise
+        mfp = most_frequent_pixel(temp)
+        # now convert the range form [0, 1] to [0, mfp]
+        _, temp = cv2.threshold(temp, 0, mfp, cv2.THRESH_BINARY)
+        op[:,:,i+1] = temp
+    x = np.sum(op, axis=2)
+    
+    return x.astype(np.uint8)
+
+def most_frequent_pixel(img):
+    '''
+    Parameters
+    ----------
+    img : 2D array containing unique pixel values for each class
+    Returns
+    -------
+    op : int, most frequently occuring pixel value excluding which has pixel value of 0
+    '''
+    unq, count = np.unique(img, return_counts=True)
+    idx = np.where(count == np.max(count[1:]))
+    op = int(unq[idx][0])
+    
+    return op
+
+def decode_predictions(seg_op, inst_op, thresh=0.5):
+    '''
+    Parameters
+    ----------
+    seg_op : Raw logits from CNN output, shape [B, H, W, N]
+    inst_op : Raw logits from CNN output, shape [B, H, W, 1]
+    thresh : Threshold on pixel confidence a float between [0, 1]
+    Returns
+    -------
+    seg_op : activated and thresholded output of CNN
+    inst_op : activated and thresholded output of CNN
+    '''
+    seg_op = softmax_activation(seg_op)
+    seg_op = (seg_op > thresh).astype(np.uint8)
+    seg_op = remove_small_obj_n_holes(seg_op, min_area=22, kernel_size=3)
+    seg_op = np.argmax(seg_op[0,:,:,:], 2).astype(np.uint8)
+    seg_op = assgin_via_majority(seg_op) # assigning instance via majority pixels ((post processing))
+    seg_op = (seg_op).astype(np.uint8)
+    
+    inst_op = sigmoid_activation(inst_op)
+    inst_op = (inst_op > thresh).astype(np.uint8)
+    inst_op = inst_op.squeeze()
+    inst_op = (inst_op).astype(np.uint8)
+    inst_op = bwmorph_thin(inst_op)
+    
+    return seg_op, inst_op
+
+def get_inst_seg(sep_inst, img, blend=True):
+    '''
+    Parameters
+    ----------
+    sep_inst : a 3D array of shape [H, W, N] where N is number of classes and in
+            each channel all the instances have a unique value.
+    img : Original RGB image for overlaying the instance seg results
+    blend: wether to project the inst mask over the RGB original image or not
+    Returns
+    -------
+    blend : a 3D array in RGB format [H W 3] in which each instance have of each
+            and all classes have a unique RGB value 
+            1. overalyed over original image if; blend=True
+            2. Raw mask if; blend=False
+    '''    
+    # if you get shape mismatch error try swaping the (w,h) argument of the line below.
+    # i.e., from (x.shape[0], x.shape[1]) to (x.shape[1], x.shape[0]).
+    img = cv2.resize(img, (sep_inst.shape[0], sep_inst.shape[1]), interpolation=cv2.INTER_LINEAR) 
+    sep_inst = measure.label(sep_inst[:,:,0:5], connectivity=2, background=0) # ignore BG channel i.e. 6th ch.
+    # take element wise sum of all channels so that each instance of each class
+    # has a unique value in whole 3D array.
+    sep_inst = np.sum(sep_inst, axis=-1) 
+    rgb = gray2color(sep_inst, use_pallet='ade20k')
+    if blend:
+        inv = 1 - cv2.threshold(sep_inst.astype(np.uint8), 0, 1, cv2.THRESH_BINARY)[1]
+        inv = cv2.merge((inv, inv, inv))
+        blend = np.multiply(img, inv)
+        blend = np.add(blend, rgb)
+    else:
+        blend = rgb
+    
+    return blend
+
+def get_inst_seg_bdr(sep_inst, img, blend=True):
+    '''
+    Parameters
+    ----------
+    sep_inst : a 3D array of shape [H, W, N] where N is number of classes and in
+            each channel all the instances have a unique value.
+    img : Original RGB image for overlaying the instance seg results
+    blend: wether to project the inst mask over the RGB original image or not
+    Returns
+    -------
+    blend : a 3D array in RGB format [H W 3] in which each instance have of each
+            and all classes have a unique RGB border. 
+            1. overalyed over original image if; blend=True
+            2. Raw mask if; blend=False
+    ''' 
+    # if you get shape mismatch error try swaping the (w,h) argument of the line below.
+    # i.e., from (x.shape[0], x.shape[1]) to (x.shape[1], x.shape[0]).
+    img = cv2.resize(img, (sep_inst.shape[0], sep_inst.shape[1]), interpolation=cv2.INTER_LINEAR) 
+    sep_inst = measure.label(sep_inst[:,:,0:5], connectivity=2, background=0)# ignore BG channel i.e. 6th ch.
+    # take element wise sum of all channels so that each instance of each class
+    # has a unique value in whole 3D array.
+    sep_inst = np.sum(sep_inst, axis=-1)
+    # isolate all instances 
+    sep_inst_enc = gray2encoded(sep_inst, num_class=len(np.unique(sep_inst)))
+    # as the in encoded output the 0th channel will be BG we don't need it so
+    sep_inst_enc = sep_inst_enc[:,:,1:]
+    # get boundaries of thest isolated instances
+    temp = np.zeros(sep_inst_enc.shape)
+    for i in range(sep_inst_enc.shape[2]):
+        temp[:,:,i] = find_boundaries(sep_inst_enc[:,:,i], connectivity=1, mode='thick', background=0)
+    
+    # bc argmax will make the inst at 0 ch zeros so add a dummy channel
+    dummy = np.zeros((temp.shape[0], temp.shape[1], 1))
+    temp =  np.concatenate((dummy, temp), axis=-1)
+    
+    sep_inst_bdr = np.argmax(temp, axis=-1)
+    sep_inst_bdr_rgb = gray2color(sep_inst_bdr, use_pallet='ade20k')
+    if blend:
+        inv = 1 - cv2.threshold(sep_inst_bdr.astype(np.uint8), 0, 1, cv2.THRESH_BINARY)[1]
+        inv = cv2.merge((inv, inv, inv))
+        blend = np.multiply(img, inv)
+        blend = np.add(blend, sep_inst_bdr_rgb)
+    else:
+        blend = sep_inst_bdr_rgb
+        
+    return blend
+
+def get_sem(sem, img, blend=True, custom_pallet=None):
+    '''
+    Parameters
+    ----------
+    sem : a 2D array of shape [H, W] where containing unique value for each class.
+    img : Original RGB image for overlaying the semantic seg results
+    blend: wether to project the inst mask over the RGB original image or not
+    Returns
+    -------
+    blend : a 3D array in RGB format [H W 3] in which each class have a unique RGB color. 
+            1. overalyed over original image if; blend=True
+            2. Raw mask if; blend=False
+    ''' 
+    # if you get shape mismatch error try swaping the (w,h) argument of the line below.
+    # i.e., from (x.shape[0], x.shape[1]) to (x.shape[1], x.shape[0]).
+    img = cv2.resize(img, (sem.shape[1], sem.shape[0]), interpolation=cv2.INTER_LINEAR) 
+    seg = gray2color(sem, use_pallet='pannuke', custom_pallet=custom_pallet)
+    
+    if blend:
+        inv = 1 - cv2.threshold(sem.astype(np.uint8), 0, 1, cv2.THRESH_BINARY)[1]
+        inv = cv2.merge((inv, inv, inv))
+        blend = np.multiply(img, inv)
+        blend = np.add(blend, seg)
+    else:
+        blend = seg
+        
+    return blend
+
+
