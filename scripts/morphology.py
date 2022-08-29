@@ -419,3 +419,62 @@ def get_sem(sem, img, blend=True, custom_pallet=None):
     return blend
 
 
+def get_sem_bdr(sem, img, blend=True, custom_pallet=None):
+    '''
+    Parameters
+    ----------
+    sem : a 2D array of shape [H, W] where containing unique value for each class.
+    img : Original RGB image for overlaying the semantic seg results
+    blend: wether to project the inst mask over the RGB original image or not
+    Returns
+    -------
+    blend : a 3D array in RGB format [H W 3] in which each class have a unique RGB border. 
+            1. overalyed over original image if; blend=True
+            2. Raw mask if; blend=False
+    ''' 
+    # if you get shape mismatch error try swaping the (w,h) argument of the line below.
+    # i.e., from (x.shape[0], x.shape[1]) to (x.shape[1], x.shape[0]).
+    img = cv2.resize(img, (sem.shape[1], sem.shape[0]), interpolation=cv2.INTER_LINEAR) 
+    # 1-hot encode all classes 
+    sem_enc = gray2encoded(sem, num_class=6)
+    # as the in encoded output the 0th channel will be BG we don't need it so
+    sem_enc = sem_enc[:,:,1:]
+    # get boundaries of thest isolated instances
+    temp = np.zeros(sem_enc.shape)
+    
+    for i in range(sem_enc.shape[2]):
+        temp[:,:,i] = find_boundaries(sem_enc[:,:,i], connectivity=1, mode='thick', background=0)
+    
+    dummy = np.zeros((temp.shape[0], temp.shape[1], 1))
+    temp =  np.concatenate((dummy, temp), axis=-1)
+        
+    sem_bdr = np.argmax(temp, axis=-1)
+    sem_bdr_rgb = gray2color(sem_bdr, use_pallet='pannuke', custom_pallet=custom_pallet)
+    if blend:
+        inv = 1 - cv2.threshold(sem_bdr.astype(np.uint8), 0, 1, cv2.THRESH_BINARY)[1]
+        inv = cv2.merge((inv, inv, inv))
+        blend = np.multiply(img, inv)
+        blend = np.add(blend, sem_bdr_rgb)
+    else:
+        blend = sem_bdr_rgb
+    return blend
+
+def my_argmax(tensor):
+    '''
+    Fixes the zero channel problem i.e. the class predicted at 0th channel 
+    wont go to 0 as it does with usual np.argmax
+    Parameters
+    ----------
+    pred_tensor : 3D/4D array of shape [B, H, W, N] or [H, W, N]
+    Returns
+    -------
+    argmaxed output of shape [B, H, W] or [H, W]]
+    '''
+    pred_tensor = np.copy(tensor)
+    j = 0
+    for i in range(pred_tensor.shape[-1]):
+        j = i+1
+        pred_tensor[:,:,:,i] = pred_tensor[:,:,:,i] * j
+    
+    pred_tensor = np.sum(pred_tensor, axis=-1)
+    return pred_tensor    
