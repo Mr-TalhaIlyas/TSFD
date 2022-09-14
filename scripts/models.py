@@ -123,13 +123,13 @@ def efficent_pet_203_clf(input_img, output_ch, bifpn_ch = 224, dropout_rate=0.3,
     Seg Branch
     '''    
     p2_seg = Upsampling_block(p2_seg, output_ch)
-    seg_output = DepthwiseConv2D((3, 3), padding='same', name='seg_out')(p2_seg)# a 3x3 conv followed by 1x1
+    seg_output = DepthwiseConv2D((3, 3), padding='same', name='seg_out')(p2_seg)
     
     '''
     Inst Branch
     '''    
     p2_inst = Upsampling_block(p2_inst, 1)
-    inst_output = DepthwiseConv2D((3, 3), padding='same', name='inst_out')(p2_inst)# a 3x3 conv followed by 1x1
+    inst_output = DepthwiseConv2D((3, 3), padding='same', name='inst_out')(p2_inst)
     
     '''
     Clf Branch
