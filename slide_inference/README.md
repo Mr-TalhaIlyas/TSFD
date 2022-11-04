@@ -11,7 +11,7 @@ scipy
 numpy
 ```
 # Usage
-Download the model from [here]()
+Download the model from [here](https://drive.google.com/file/d/1-QMFaS8RS9VF242K2KnDR1QS1fGJI4h4/view?usp=sharing)
 ```
 python slide_inference.py -m "path\to\model.h5" -sd "path\to\slides\" -dd "path\to\save\preds\" -b True -r False
 
