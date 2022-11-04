@@ -16,20 +16,17 @@ required arguments:
     -h, --help            
         show this help message and exit. 
         Only model path and video path are required. 
-    -m  
+    -m  --model_path
         path to the directory where all the images of sequence are.
-    -v 
-        path where the preprocessed data will be saved.
-    -sp 
-        number of pathces to run thruough model. This is to 
-        speed up the inference. Lower value (0) results in high speed.
-        between [0,10].
-    -fps, 
-         frames to be read and put in queue for processing
-    -rpa, 
-        list size for prediction averaging over the current history of previous predictions.
-    -pv, 
-        Whether to play the video or not. Press 'Q' to abort.
+    -sd --slide_dir
+        directory where slides are.
+    -dd --dest_dir
+        directory where to write predictions.
+    -b --blend
+         Whether to overlay predictions over image or not.
+    -r --draw_bdr
+        Whether to draw borders or fill the nuclei detections..
+  
 '''
 def str2bool(v):
     '''
