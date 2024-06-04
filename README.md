@@ -20,22 +20,24 @@ You can follow the steps highlighted in the following [repo](https://github.com/
 
 Figure below shows full architecture of our proposed TSFD-Net.
 
-![alt text](https://gitfront.io/r/talha/6869f722e912f647c023710f40c958495046fca9/TSFD/raw/screens/img1.png)
-
+<!--![alt text](https://gitfront.io/r/talha/6869f722e912f647c023710f40c958495046fca9/TSFD/raw/screens/img1.png)-->
+![alt text](https://github.com/Mr-TalhaIlyas/TSFD/blob/master/screens/img1.png)
 
 ## Results
 
 The Table below compare quantitative results of different models.
 
 
-![alt text](https://gitfront.io/r/talha/6869f722e912f647c023710f40c958495046fca9/TSFD/raw/screens/results.png)
+<!--![alt text](https://gitfront.io/r/talha/6869f722e912f647c023710f40c958495046fca9/TSFD/raw/screens/results.png)-->
+![alt text](https://github.com/Mr-TalhaIlyas/TSFD/blob/master/screens/results.png)
 
   
 ## Visual Results
 The figure below shows some qualitative results.
 
 
-![alt text](https://gitfront.io/r/talha/6869f722e912f647c023710f40c958495046fca9/TSFD/raw/screens/img3.png)
+<!--![alt text](https://gitfront.io/r/talha/6869f722e912f647c023710f40c958495046fca9/TSFD/raw/screens/img3.png)-->
+![alt text](https://github.com/Mr-TalhaIlyas/TSFD/blob/master/screens/img3.png)
 
 ## Evaluation
 
